@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E117C">
+<title>Calendario de Diseño CI · Achs Servicios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=Roboto+Slab:wght@600&display=swap">
+<style>
+:root{
+  --bg:#F7F6F1; --surface:#FFFFFF; --line:#E2E0D6; --ink:#16112E; --muted:#66627A;
+  --brand:#8B73FF; --brand-ink:#1E117C; --soft:#F1EEFF; --track:#ECEAF3;
+  --ok:#7EFF45; --warn:#FFD25E; --full:#E5484D;
+  --f-ui:"Figtree",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --f-num:"Roboto Slab",Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{--bg:#121020; --surface:#1C1932; --line:#2E2A48; --ink:#F1EFFA; --muted:#A9A5BD; --brand-ink:#CFC6FF; --soft:#272148; --track:#2B2843; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0; background:var(--bg); color:var(--ink)}
+body{font-family:var(--f-ui); font-size:15px; line-height:1.4; padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:1000px; margin-inline:auto; padding-inline:16px; padding-block:16px 40px; display:flex; flex-direction:column; gap:14px}
+.logo{display:inline-flex; align-items:center; gap:6px; font-weight:700}
+.logo b{background:#8B73FF; color:#fff; border-radius:8px; padding:2px 7px}
+.logo span{color:#8B73FF; font-weight:600}
+h1{margin:0; font-size:22px}
+.sub{margin:0; color:var(--muted); font-size:14px}
+.month{display:flex; align-items:center; gap:6px}
+.month button{all:unset; cursor:pointer; width:40px; height:40px; display:grid; place-items:center; border-radius:12px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font-size:20px}
+.month strong{flex:1; text-align:center; font-size:18px; text-transform:capitalize}
+.cal{background:var(--surface); border:1px solid var(--line); border-radius:16px; overflow:hidden}
+.row{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)) 8.5rem}
+.row + .row{border-top:1px solid var(--line)}
+.hd{font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); padding:8px; text-align:center; background:var(--soft)}
+.day{all:unset; box-sizing:border-box; cursor:pointer; min-height:6.5rem; padding:6px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:4px; min-width:0}
+.day.out{background:var(--bg); color:var(--muted)}
+.day.sel,.day:focus-visible{box-shadow:0 0 0 2px var(--brand) inset}
+.dn{font-size:13px; font-weight:600}
+.day.today .dn{background:var(--brand); color:#fff; border-radius:99px; width:24px; height:24px; display:grid; place-items:center}
+.pc{font-size:12px; background:var(--soft); color:var(--brand-ink); border-radius:6px; padding:2px 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pc::before{content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; background:var(--dot,var(--brand))}
+.more{font-size:12px; color:var(--muted)}
+.badge{display:none; align-self:center; margin-top:auto; font-family:var(--f-num); font-size:15px; color:#fff; background:var(--brand); border-radius:99px; min-width:26px; height:26px; place-items:center; padding:0 6px}
+.cap{display:flex; flex-direction:column; justify-content:center; gap:3px; padding:6px 8px}
+.cap .tt{display:flex; align-items:center; gap:6px}
+.cap b{font-family:var(--f-num); font-size:17px; font-variant-numeric:tabular-nums}
+.cap i{width:12px; height:12px; border-radius:50%; flex:none}
+.cap small{font-size:11.5px; color:var(--muted); white-space:nowrap}
+.cap small.z{color:var(--full); font-weight:600}
+@media (max-width:620px){
+  .row{grid-template-columns:repeat(5,minmax(0,1fr)) 3.2rem}
+  .day{min-height:4.2rem; align-items:center}
+  .pc,.more{display:none}
+  .badge{display:grid}
+  .hd{font-size:11px; padding:6px 2px}
+  .cap{align-items:center; padding:6px 2px}
+  .cap small{display:none}
+}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.legend i{width:10px; height:10px; border-radius:50%}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:14px 16px; display:flex; flex-direction:column; gap:10px}
+.panel h2{margin:0; font-size:17px}
+.wk{font-size:14px; color:var(--muted)}
+.tipos{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.tipo{background:var(--soft); border-radius:12px; padding:8px 10px}
+.tipo .k{font-size:12px; color:var(--muted)}
+.tipo .v{font-family:var(--f-num); font-size:20px; color:var(--brand-ink)}
+.tipo .f{font-size:12.5px; font-weight:600}
+.tipo .f.z{color:var(--full)}
+ul{list-style:none; margin:0; padding:0}
+li{display:flex; align-items:center; gap:8px; padding:8px 0; border-top:1px solid var(--line)}
+li .n{flex:1; min-width:0; overflow-wrap:anywhere}
+li .a{color:var(--muted); font-size:14px}
+li .tg{font-size:12px; border-radius:99px; padding:2px 8px; background:var(--soft); color:var(--brand-ink)}
+h3{margin:4px 0 0; font-size:15px}
+.add{display:flex; gap:8px; flex-wrap:wrap}
+.add input,.add select{flex:1 1 9rem; min-width:0; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:8px 10px}
+.add select{flex:0 1 auto}
+.bt{all:unset; cursor:pointer; border-radius:10px; padding:8px 14px; font-weight:700; background:var(--brand); color:#fff; text-decoration:none}
+.bt.sec{background:transparent; color:var(--brand-ink); border:1px solid var(--brand)}
+:is(.month button,.bt):focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.empty{color:var(--muted); font-size:14px; margin:0}
+.msg{color:var(--full); font-size:13px; margin:0; flex-basis:100%}
+.done{background:var(--soft); border:1px solid var(--brand); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px}
+.done h3{margin:0; color:var(--brand-ink)}
+.done p{margin:0}
+.mail{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.mail b{font-size:16px; color:var(--brand-ink); user-select:all; overflow-wrap:anywhere}
+.done textarea{width:100%; min-height:15rem; font:inherit; font-size:14px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px; resize:vertical}
+.btns{display:flex; gap:8px; flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="logo"><b>achs</b><span>servicios</span></span>
+  <div>
+    <h1>Calendario de piezas de diseño</h1>
+    <p class="sub" id="sub">Cupo del diseñador por semana: 9 solicitudes generales y 1 urgente (40 piezas al mes). Las piezas de alta complejidad se cotizan aparte.</p>
+  </div>
+  <div class="month">
+    <button id="prev" aria-label="Mes anterior">‹</button>
+    <strong id="mlabel">—</strong>
+    <button id="next" aria-label="Mes siguiente">›</button>
+  </div>
+  <div class="cal" id="cal" aria-label="Calendario del mes"></div>
+  <div class="legend">
+    <span><i style="background:var(--ok)"></i>Con cupo</span>
+    <span><i style="background:var(--warn)"></i>Últimos cupos</span>
+    <span><i style="background:var(--full)"></i>Semana completa</span>
+    <span><i style="background:var(--brand)"></i>General</span>
+    <span><i style="background:var(--full)"></i>Urgente</span>
+    <span id="tot"></span>
+  </div>
+  <section class="panel" id="panel" aria-live="polite"></section>
+</div>
+
+<script src="piezas.js"></script>
+<script>
+(() => {
+  const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const DIAS=['lunes','martes','miércoles','jueves','viernes'];
+  const $=(id)=>document.getElementById(id);
+  const CUPO=window.CUPO||{generales:9,urgentes:1};
+  const caps={General:Number(CUPO.generales)||9, Urgente:Number(CUPO.urgentes)||1};
+  const cap=caps.General+caps.Urgente;
+  const MAIL=window.CORREO_SOLICITUDES||'rcasalig@achsservicios.cl';
+  const TIPOS=[['General','Generales','var(--brand)'],['Urgente','Urgentes','var(--full)']];
+  const tipoDe=(p)=>String(p.tipo||'').toLowerCase().startsWith('urg')?'Urgente':'General';
+  const piezas=(Array.isArray(window.PIEZAS)?window.PIEZAS:[]).filter(p=>p&&p.fecha&&p.titulo).map(p=>({...p,tipo:tipoDe(p)}));
+  $('sub').textContent='Cupo del diseñador por semana: '+caps.General+' solicitudes generales y '+caps.Urgente+' urgente'+(caps.Urgente===1?'':'s')+'. Las piezas de alta complejidad se cotizan aparte.';
+
+  const now=new Date();
+  const iso=(d)=>d.toISOString().slice(0,10), parse=(s)=>new Date(s+'T00:00:00Z');
+  const add=(d,n)=>{const x=new Date(d); x.setUTCDate(x.getUTCDate()+n); return x;};
+  const monday=(d)=>add(d,-((d.getUTCDay()+6)%7));
+  const todayD=new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()));
+  const today=iso(todayD);
+  let cur=new Date(Date.UTC(now.getFullYear(),now.getMonth(),1));
+  let sel=(todayD.getUTCDay()%6===0)? iso(add(monday(todayD),7)) : today;
+  let draft=null;
+  const el=(tag,cls,txt)=>{const e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e;};
+  const weekOf=(s)=>iso(monday(parse(s)));
+  const uso=(w)=>{const u={General:0,Urgente:0}; piezas.forEach(p=>{ if(weekOf(p.fecha)===w) u[p.tipo]++; }); return u;};
+  const color=(n)=> n>=cap?'var(--full)': n>=cap-2?'var(--warn)':'var(--ok)';
+  const largo=(s)=>{const d=parse(s); return d.getUTCDate()+' de '+MESES[d.getUTCMonth()]+' de '+d.getUTCFullYear();};
+
+  function weeksInView(){
+    const first=cur, last=new Date(Date.UTC(cur.getUTCFullYear(),cur.getUTCMonth()+1,0));
+    let w=monday(first); if(add(w,4)<first) w=add(w,7);
+    const out=[]; while(w<=last){ out.push(w); w=add(w,7); } return out;
+  }
+
+  function renderCal(){
+    $('mlabel').textContent=MESES[cur.getUTCMonth()]+' '+cur.getUTCFullYear();
+    const cal=$('cal'); cal.replaceChildren();
+    const hd=el('div','row'); ['Lun','Mar','Mié','Jue','Vie','Cupo'].forEach(t=>hd.append(el('div','hd',t))); cal.append(hd);
+    let mt=0;
+    weeksInView().forEach(w=>{
+      const row=el('div','row');
+      for(let i=0;i<5;i++){
+        const d=add(w,i), ds=iso(d), ps=piezas.filter(p=>p.fecha===ds);
+        if(d.getUTCMonth()===cur.getUTCMonth()) mt+=ps.length;
+        const b=el('button','day'+(d.getUTCMonth()!==cur.getUTCMonth()?' out':'')+(ds===today?' today':'')+(ds===sel?' sel':''));
+        b.type='button'; b.setAttribute('aria-label',DIAS[i]+' '+d.getUTCDate()+' de '+MESES[d.getUTCMonth()]+', '+ps.length+(ps.length===1?' pieza':' piezas'));
+        b.append(el('span','dn',String(d.getUTCDate())));
+        ps.slice(0,3).forEach(p=>{ const s=el('span','pc',p.titulo); s.style.setProperty('--dot',p.tipo==='Urgente'?'var(--full)':'var(--brand)'); b.append(s); });
+        if(ps.length>3) b.append(el('span','more','+'+(ps.length-3)+' más'));
+        if(ps.length) b.append(el('span','badge',String(ps.length)));
+        b.addEventListener('click',()=>{ sel=ds; draft=null; renderCal(); renderPanel(); });
+        row.append(b);
+      }
+      const ws=iso(w), u=uso(ws), n=u.General+u.Urgente, c=el('div','cap'), tt=el('div','tt'), dot=el('i');
+      dot.style.background=color(n); tt.append(dot, el('b',null,n+'/'+cap)); c.append(tt);
+      TIPOS.forEach(([t,name])=>{ const f=caps[t]-u[t]; c.append(el('small', f<=0?'z':null, name+': '+(f>0?f+' libre'+(f===1?'':'s'):'sin cupo'))); });
+      row.append(c); cal.append(row);
+    });
+    $('tot').textContent='· '+mt+' piezas este mes';
+  }
+
+  function plantilla(x){
+    const f=largo(x.fecha);
+    const L=['Pieza solicitada en el calendario: '+x.titulo+' · '+f+' · Solicitud '+x.tipo.toLowerCase(),'',
+      '1. Número de identificación de la solicitud (generado por Forms): ',
+      '2. Área solicitante, nombre y datos de contacto de la persona responsable: '+x.area+' – ',
+      '3. Nombre, objetivo y público destinatario de la iniciativa: ',
+      '4. Mensaje principal y contenidos completos, consolidados y técnicamente validados: ',
+      '5. Tipo de pieza solicitada (gráfica, campaña o video), canales de difusión y cantidad de formatos o versiones: ',
+      '6. Referencias visuales, bocetos o ejemplos (archivos adjuntos o enlaces), cuando existan: ',
+      '7. Fecha requerida de entrega (sujeta a evaluación y confirmación): '+f,
+      '8. ¿El contenido es de carácter obligatorio (normativo, de seguridad o prevención)?: ',
+      '9. Nombre de la persona responsable del visto bueno técnico y de contenidos: '];
+    if(x.tipo==='Urgente') L.push('','Justificación de la urgencia: ');
+    return L.join('\n');
+  }
+  async function copiar(txt,btn,fb){
+    const old=btn.textContent;
+    try{ await navigator.clipboard.writeText(txt); btn.textContent='Copiado'; }
+    catch(e){ if(fb){ fb.focus(); fb.select&&fb.select(); } btn.textContent='Selecciona y copia'; }
+    setTimeout(()=>btn.textContent=old,2000);
+  }
+  function aviso(x){
+    const asunto='Solicitud de diseño – '+x.titulo+' – '+largo(x.fecha);
+    const box=el('div','done');
+    box.append(el('h3',null,'Solicitud lista para enviar: '+x.titulo));
+    box.append(el('p',null,'Para agendar la pieza, envía tu solicitud por correo a:'));
+    const m=el('div','mail'), bm=el('button','bt sec','Copiar correo'); bm.type='button';
+    m.append(el('b',null,MAIL), bm); bm.addEventListener('click',()=>copiar(MAIL,bm,null)); box.append(m);
+    box.append(el('p',null,'Con la siguiente información completada (asunto: '+asunto+'):'));
+    const ta=el('textarea'); ta.value=plantilla(x); ta.setAttribute('aria-label','Información de la solicitud'); box.append(ta);
+    const bs=el('div','btns');
+    const a=el('a','bt','Abrir correo'); a.href='mailto:'+MAIL+'?subject='+encodeURIComponent(asunto)+'&body='+encodeURIComponent(ta.value);
+    ta.addEventListener('input',()=>{ a.href='mailto:'+MAIL+'?subject='+encodeURIComponent(asunto)+'&body='+encodeURIComponent(ta.value); });
+    const bc=el('button','bt sec','Copiar texto'); bc.type='button'; bc.addEventListener('click',()=>copiar(asunto+'\n\n'+ta.value,bc,ta));
+    const bok=el('button','bt sec','Cerrar'); bok.type='button'; bok.addEventListener('click',()=>{ draft=null; renderPanel(); });
+    bs.append(a,bc,bok); box.append(bs);
+    box.append(el('p','empty','La pieza aparecerá en el calendario cuando Comunicaciones Internas confirme la solicitud.'));
+    return box;
+  }
+
+  function renderPanel(){
+    const p=$('panel'); p.replaceChildren();
+    const d=parse(sel), w=weekOf(sel), u=uso(w), n=u.General+u.Urgente;
+    const dn=DIAS[(d.getUTCDay()+6)%7]; p.append(el('h2',null,dn.charAt(0).toUpperCase()+dn.slice(1)+' '+d.getUTCDate()+' de '+MESES[d.getUTCMonth()]));
+    p.append(el('div','wk', n>=cap?'Semana completa: '+n+' de '+cap+' piezas':'Esta semana lleva '+n+' de '+cap+' piezas'));
+    const tg=el('div','tipos');
+    TIPOS.forEach(([t,name])=>{ const f=caps[t]-u[t], b=el('div','tipo');
+      b.append(el('div','k','Solicitudes '+name.toLowerCase()), el('div','v',u[t]+' de '+caps[t]), el('div','f'+(f<=0?' z':''), f>0?f+(f===1?' disponible':' disponibles'):(f<0?'Sobrecupo de '+(-f):'Sin cupo')));
+      tg.append(b); });
+    p.append(tg);
+    const ps=piezas.filter(x=>x.fecha===sel);
+    if(ps.length){ const ul=el('ul'); ps.forEach(x=>{ const li=el('li'); li.append(el('span','n',x.titulo), el('span','a',x.area||''), el('span','tg',x.tipo)); ul.append(li); }); p.append(ul); }
+    else p.append(el('p','empty','No hay piezas agendadas este día.'));
+    if(draft){ p.append(aviso(draft)); return; }
+    p.append(el('h3',null,'Solicitar una pieza para este día'));
+    const f=el('form','add'); f.noValidate=true;
+    const i1=el('input'); i1.id='i-pieza'; i1.placeholder='Pieza'; i1.maxLength=80; i1.setAttribute('aria-label','Nombre de la pieza');
+    const i2=el('input'); i2.id='i-area'; i2.placeholder='Área'; i2.maxLength=50; i2.setAttribute('aria-label','Área solicitante');
+    const s=el('select'); s.id='i-tipo'; s.setAttribute('aria-label','Tipo de solicitud'); ['General','Urgente'].forEach(t=>s.append(new Option(t,t)));
+    const b=el('button','bt','Continuar'); b.type='submit'; const msg=el('p','msg');
+    f.append(i1,i2,s,b,msg);
+    f.addEventListener('submit',(e)=>{ e.preventDefault();
+      const titulo=i1.value.trim(), area=i2.value.trim(), tipo=s.value;
+      if(!titulo||!area){ msg.textContent='Escribe la pieza y el área.'; return; }
+      draft={titulo,area,tipo,fecha:sel}; renderPanel(); });
+    p.append(f);
+    if(caps[s.value]-u[s.value]<=0) msg.textContent='Esta semana ya no tiene cupo general. Elige otra semana o envíala igual para evaluación.';
+    s.addEventListener('change',()=>{ msg.textContent= caps[s.value]-u[s.value]<=0 ? 'Esta semana ya no tiene cupo '+(s.value==='General'?'general':'urgente')+'. Elige otra semana o envíala igual para evaluación.' : ''; });
+  }
+
+  $('prev').addEventListener('click',()=>{cur=new Date(Date.UTC(cur.getUTCFullYear(),cur.getUTCMonth()-1,1)); renderCal();});
+  $('next').addEventListener('click',()=>{cur=new Date(Date.UTC(cur.getUTCFullYear(),cur.getUTCMonth()+1,1)); renderCal();});
+  renderCal(); renderPanel();
+})();
+</script>
+</body>
+</html>
